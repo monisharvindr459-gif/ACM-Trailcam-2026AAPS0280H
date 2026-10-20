@@ -293,3 +293,15 @@ My original CNN demonstrated this through overfitting, while augmentation consis
 The final model reached 83.87% test accuracy, although the results are specific to CIFAR-10 and shouldn't be treated as an estimate of performance on actual wildlife-camera images.
 
 Since these were exploratory experiments rather than repeated trials across several random seeds, the reported improvements describe the results of these particular training runs.
+
+
+---
+
+## Running the notebook
+
+1. Install the dependencies with `pip install -r requirements.txt` or open [ACM_Trailcam.ipynb](ACM_Trailcam.ipynb) in Google Colab.
+2. Keep the `checkpoints/` and `histories/` folders alongside the notebook. Set `TRAIN_MODELS = False` to load the saved models without retraining.
+3. Run the notebook cells in order. The final cells generate accuracy/loss plots, test accuracy, the confusion matrix and misclassified examples.
+4. To retrain deliberately, set `TRAIN_MODELS = True`; GPU runtime is recommended.
+
+**Checkpoint upload note:** `checkpoints/run_D_best.pt` (ImprovedCNN, augmented run D) was not included in the initial GitHub upload because the file transfer was blocked. Until it is added to `checkpoints/`, the evaluation cell loading all six saved models will fail for run D. The checkpoint is saved in the original [project's Google Drive](https://drive.google.com/file/d/10EradSWqxFVkbSpzeEPGguJZPDNq0LoO/view) and can be downloaded and uploaded to this repository without modifying the test code.
