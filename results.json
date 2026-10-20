@@ -1,0 +1,23 @@
+{
+  "test_accuracy": {
+    "A": 66.09,
+    "B": 70.07,
+    "C": 73.33,
+    "D": 74.96,
+    "more_A": 82.14,
+    "more_B": 83.87
+  },
+  "most_confused_pair": [
+    "cat",
+    "dog"
+  ],
+  "pair_total": 287,
+  "confused_directions": {
+    "cat -> dog": 132,
+    "dog -> cat": 155
+  },
+  "most_errors": {
+    "cat": 309,
+    "dog": 250
+  }
+}
