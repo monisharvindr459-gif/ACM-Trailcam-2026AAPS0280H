@@ -163,13 +163,14 @@ Among the six CNN runs trained from scratch, the highest test accuracy was **83.
 
 I also wanted to see whether using a pretrained model would improve my results, instead of building another CNN completely from scratch. I used ImageNet-pretrained **MobileNetV2**, replaced its last classifier layer for the 10 CIFAR-10 classes, and fine-tuned its last two feature blocks and classifier. I trained it for **15 epochs**, with a 45,000/5,000 training/validation split (seed 4) and resized inputs for the pretrained model.
 
-**Notebook:** [MobileNetV2.ipynb](MobileNetV2.ipynb) ([open in Colab](https://colab.research.google.com/drive/1NvOEyed5KVjDsihsWWWKkuMlatMvJvYF?usp=sharing))
+Brownie Points Task:
+(https://colab.research.google.com/drive/1NvOEyed5KVjDsihsWWWKkuMlatMvJvYF?usp=sharing))
 
-- **New accuracy:** **89.19%** test accuracy (best validation accuracy: **88.74%**).
-- **Improvement from last model:** **+5.32 percentage points**, compared with MoreImprovedCNN B with augmentation (**83.87% → 89.19%**).
-- **Improvement from very first model:** **+23.10 percentage points**, compared with SimpleCNN A without augmentation (**66.09% → 89.19%**).
+- New accuracy: 89.19% test accuracy (best validation accuracy: 88.74%).
+- Improvement from last model: +5.32 percentage points, compared with MoreImprovedCNN B with augmentation (83.87% → 89.19%).
+- Improvement from very first model: +23.10 percentage points, compared with SimpleCNN A without augmentation (66.09% → 89.19%).
 
-**Conclusion:** The pretrained model gave me the best CIFAR-10 test accuracy in these experiments. Training my own CNNs showed that augmentation and architecture changes helped, but starting from pretrained features worked even better here. This is not a completely controlled comparison, since MobileNetV2 already learned from ImageNet and uses larger resized inputs. The result also comes from a single training run, so it should not be treated as a guaranteed improvement on other datasets or real trail-camera images.
+Conclusion: The pretrained model gave me the best CIFAR-10 test accuracy in these experiments. Training my own CNNs showed that augmentation and architecture changes helped, but starting from pretrained features worked even better here. This is not a complete comparison, since MobileNetV2 already learned from ImageNet and uses larger resized inputs.
 
 ---
 
@@ -237,8 +238,7 @@ Cat was also the class with the most incorrect predictions overall (309 out of 1
 
 This may be because cats and dogs share several features,including fur, ears and body shape. CIFAR-10's low image resolution makes fine details harder to distinguish.
 
-### Misclassified Examples
-
+### Misclassified Examples (Brownie Points Task)
 ![Misclassified CIFAR-10 images](figures/misclassified_more_improved_B.png)
 
 
@@ -287,7 +287,7 @@ MoreImprovedCNN added further convolutional layers, additional regularization an
 
 The more advanced experiments achieved higher accuracies. However, because multiple changes were introduced together, the results don't isolate the effect of each individual technique.
 
-### 4. Confusion matrix findings
+### 4. Confusion matrix findings + Brownie Points Task Finding
 
 Our best model correctly classified **8,387 of the 10,000 test images**, leaving 1,613 incorrect predictions.
 
@@ -302,12 +302,3 @@ My original CNN demonstrated this through overfitting, while augmentation consis
 The best CNN trained from scratch reached 83.87% test accuracy, although the results are specific to CIFAR-10 and shouldn't be treated as an estimate of performance on actual wildlife-camera images.
 
 Since these were exploratory experiments rather than repeated trials across several random seeds, the reported improvements describe the results of these particular training runs.
-
----
-
-## Running the original notebook
-
-1. Install the dependencies with `pip install -r requirements.txt`, or open [ACM_Trailcam.ipynb](ACM_Trailcam.ipynb) in Google Colab.
-2. Keep `checkpoints/` and `histories/` alongside the original notebook. Set `TRAIN_MODELS = False` to load the existing six saved models without retraining.
-3. Run the cells in order to produce accuracy/loss plots, test metrics, the confusion matrix and misclassified examples.
-4. To retrain the original six experiments deliberately, set `TRAIN_MODELS = True` and use a GPU where available.
