@@ -174,8 +174,6 @@ I also wanted to see whether using a pretrained model would improve my results, 
 
 ---
 
----
-
 ## Accuracy and Loss Plots
 
 ### SimpleCNN
