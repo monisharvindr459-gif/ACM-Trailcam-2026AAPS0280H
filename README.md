@@ -5,7 +5,6 @@ The project file has **6 runs instead of the required 2**. This is because of my
 Each architecture has two runs: one without augmentation and one with augmentation.
 
 Here is a report of all three architectures:
-
 ### 1. SimpleCNN
 
 **2 Convolutional Layers**
