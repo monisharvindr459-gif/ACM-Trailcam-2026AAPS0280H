@@ -292,12 +292,3 @@ The final model reached 83.87% test accuracy, although the results are specific 
 
 Since these were exploratory experiments rather than repeated trials across several random seeds, the reported improvements describe the results of these particular training runs.
 
-
----
-
-## Running the notebook
-
-1. Install the dependencies with `pip install -r requirements.txt` or open [ACM_Trailcam.ipynb](ACM_Trailcam.ipynb) in Google Colab.
-2. Keep the `checkpoints/` and `histories/` folders alongside the notebook. Set `TRAIN_MODELS = False` to load the saved models without retraining.
-3. Run the notebook cells in order. The final cells generate accuracy/loss plots, test accuracy, the confusion matrix and misclassified examples.
-4. To retrain deliberately, set `TRAIN_MODELS = True`; GPU runtime is recommended.
