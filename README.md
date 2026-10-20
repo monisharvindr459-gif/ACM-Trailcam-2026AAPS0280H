@@ -101,6 +101,7 @@ The results were considerably better, especially with augmentation.
 - GPT also helped me organize the implementation, including:
 
   - Using Dataloader for batching and shuffling.
+  - Writing this readme and uploading to github
   - Separating training, validation and testing.
   - Saving training histories in `.json` files.
   - Resuming interrupted training from saved checkpoints.
