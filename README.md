@@ -1,6 +1,4 @@
-# Project Trailcam: Who's on the Road?
-
-## Model Architectures and Experimental Report
+# Project Trailcam
 
 The project file has **6 runs instead of the required 2**. This is because of my attempts to increase test accuracy and reduce overfitting, particularly in the runs without augmentation. I wasn't satisfied with the results of SimpleCNN, so I tried two additional architectures with progressively more changes.
 
