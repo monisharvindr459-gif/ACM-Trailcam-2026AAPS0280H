@@ -158,7 +158,21 @@ Augmentation was applied only during training, not during validation or testing.
 
 All three architectures performed better when trained with augmentation.
 
-The highest test accuracy was **83.87%**, achieved by MoreImprovedCNN with augmentation.
+Among the six CNN runs trained from scratch, the highest test accuracy was **83.87%**, achieved by MoreImprovedCNN with augmentation.
+
+### Bonus experiment: Transfer learning with MobileNetV2
+
+I also wanted to see whether using a pretrained model would improve my results, instead of building another CNN completely from scratch. I used ImageNet-pretrained **MobileNetV2**, replaced its last classifier layer for the 10 CIFAR-10 classes, and fine-tuned its last two feature blocks and classifier. I trained it for **15 epochs**, with a 45,000/5,000 training/validation split (seed 4) and resized inputs for the pretrained model.
+
+**Notebook:** [MobileNetV2.ipynb](MobileNetV2.ipynb) ([open in Colab](https://colab.research.google.com/drive/1NvOEyed5KVjDsihsWWWKkuMlatMvJvYF?usp=sharing))
+
+- **New accuracy:** **89.19%** test accuracy (best validation accuracy: **88.74%**).
+- **Improvement from last model:** **+5.32 percentage points**, compared with MoreImprovedCNN B with augmentation (**83.87% → 89.19%**).
+- **Improvement from very first model:** **+23.10 percentage points**, compared with SimpleCNN A without augmentation (**66.09% → 89.19%**).
+
+**Conclusion:** The pretrained model gave me the best CIFAR-10 test accuracy in these experiments. Training my own CNNs showed that augmentation and architecture changes helped, but starting from pretrained features worked even better here. This is not a completely controlled comparison, since MobileNetV2 already learned from ImageNet and uses larger resized inputs. The result also comes from a single training run, so it should not be treated as a guaranteed improvement on other datasets or real trail-camera images.
+
+---
 
 ---
 
@@ -210,7 +224,7 @@ The highest test accuracy was **83.87%**, achieved by MoreImprovedCNN with augme
 
 ## Confusion Matrix
 
-The confusion matrix was generated using **MoreImprovedCNN B**, which achieved the highest test accuracy.
+The confusion matrix was generated using **MoreImprovedCNN B**, which achieved the highest test accuracy among the six scratch-trained CNN runs.
 
 ![MoreImprovedCNN B confusion matrix](figures/confusion_matrix_more_improved_B.png)
 
@@ -288,7 +302,7 @@ The main thing I observed was that increasing training accuracy alone doesn't gu
 
 My original CNN demonstrated this through overfitting, while augmentation consistently improved the test accuracy across all three architectures.
 
-The final model reached 83.87% test accuracy, although the results are specific to CIFAR-10 and shouldn't be treated as an estimate of performance on actual wildlife-camera images.
+The best CNN trained from scratch reached 83.87% test accuracy, although the results are specific to CIFAR-10 and shouldn't be treated as an estimate of performance on actual wildlife-camera images.
 
 Since these were exploratory experiments rather than repeated trials across several random seeds, the reported improvements describe the results of these particular training runs.
 
