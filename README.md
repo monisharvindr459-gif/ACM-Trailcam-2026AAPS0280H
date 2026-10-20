@@ -300,12 +300,3 @@ Since these were exploratory experiments rather than repeated trials across seve
 2. Keep `checkpoints/` and `histories/` alongside the original notebook. Set `TRAIN_MODELS = False` to load the existing six saved models without retraining.
 3. Run the cells in order to produce accuracy/loss plots, test metrics, the confusion matrix and misclassified examples.
 4. To retrain the original six experiments deliberately, set `TRAIN_MODELS = True` and use a GPU where available.
-
-
-## Bonus: Pretrained MobileNetV2 (transfer learning)
-
-The second optional brownie-points experiment is implemented in [Transfer_Learning_MobileNetV2.ipynb](Transfer_Learning_MobileNetV2.ipynb). It uses an **ImageNet-pretrained MobileNetV2**, changes its classifier to 10 CIFAR-10 classes and fine-tunes the final two feature blocks plus the classifier. It uses the same seed-4 CIFAR-10 **45,000 / 5,000** training/validation split as our best MoreImprovedCNN run, with pretrained-compatible input resizing and normalization.
-
-**How to run:** Open the bonus notebook in Google Colab, choose a GPU runtime if available, and run all cells. It will download the dataset and pretrained model, train for 8 epochs by default, select its best model on validation accuracy, evaluate the official test set, and save a history JSON, test-result JSON, best model checkpoint, curves, confusion matrix and misclassified examples to `MyDrive/ACM_Trailcam/Transfer_Learning/` (or local `transfer_learning/` outside Colab). The final optimizer checkpoint supports resuming if Colab disconnects.
-
-**Status: Training not yet executed.** The provided notebook is runnable, but **no MobileNetV2 test accuracy is claimed yet**. Once the GPU training finishes, transfer its generated artifacts to this repository and fill in the measured comparison with the existing **83.87%** MoreImprovedCNN test result. The pretrained backbone also benefits from external ImageNet training and a different input resolution, so the comparison should be interpreted accordingly.
