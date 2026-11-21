@@ -69,8 +69,12 @@ public class TicketJob extends JobService {
   fmt.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
   p.edit().putString("last_check",fmt.format(new Date())+" IST")
    .putString("check_result",result.toString()).apply();
+  // Keep Dune (high priority) completely separate from Avengers (normal notification).
+  try { AvengersWatch.check(context); } catch(Exception ignored) {
+   p.edit().putString("avengers_result","Avengers check unavailable").apply();
+  }
  }
- private static String fetch(String target)throws Exception{
+ static String fetch(String target)throws Exception{
   HttpURLConnection conn=(HttpURLConnection)new URL(target).openConnection();
   conn.setConnectTimeout(12000);conn.setReadTimeout(12000);
   conn.setRequestProperty("Accept","text/html,application/xhtml+xml");

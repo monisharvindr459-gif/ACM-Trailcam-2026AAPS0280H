@@ -64,8 +64,8 @@ public class MainActivity extends Activity {
   root.addView(label("ARRAKIS / ALERT SYSTEM",14,0xfff5be64));
   root.addView(label("Dune IMAX\nTicket Alarm",34,Color.WHITE));
   root.addView(label("CHENNAI  •  18 / 19 / 20 DECEMBER 2026",15,0xfff5be64));
-  root.addView(label("PVR PALAZZO / NEXUS VIJAYA\nINOX LUXE / PHOENIX MARKETCITY",15,0xffbbccdd));
-  root.addView(label("Checks both Chennai IMAX cinema listings for all three dates approximately every 15 minutes. A listed showtime alone cannot prove checkout works, and will never trigger a confirmed-booking siren.",14,0xffbbccdd));
+  root.addView(label("DUNE: PVR PALAZZO / NEXUS VIJAYA\nDUNE: INOX LUXE / PHOENIX MARKETCITY",15,0xffbbccdd));
+  root.addView(label("DUNE • HIGH PRIORITY: loud alarm on confirmed ChatGPT ticket alert for 18-20 Dec.\n\nAVENGERS • NORMAL NOTIFICATIONS: Chennai-wide MS Infinity Vision 3D listings for 21-27 Dec. No siren. Listing alerts do not guarantee checkout.",14,0xffbbccdd));
   Switch monitoring=new Switch(this);monitoring.setText("15-minute public-listing checks");monitoring.setTextColor(-1);
   monitoring.setChecked(prefs(this).getBoolean("polling",true));
   monitoring.setOnCheckedChangeListener((b,on)->{prefs(this).edit().putBoolean("polling",on).apply();TicketJob.schedule(this);});
@@ -74,8 +74,12 @@ public class MainActivity extends Activity {
   armed.setChecked(prefs(this).getBoolean("armed",true));
   armed.setOnCheckedChangeListener((b,on)->prefs(this).edit().putBoolean("armed",on).apply());
   root.addView(armed);
+  Switch avengersWatch=new Switch(this);avengersWatch.setText("Avengers normal alerts • 21–27 Dec");avengersWatch.setTextColor(-1);
+  avengersWatch.setChecked(prefs(this).getBoolean("avengers_enabled",true));
+  avengersWatch.setOnCheckedChangeListener((b,on)->prefs(this).edit().putBoolean("avengers_enabled",on).apply());
+  root.addView(avengersWatch);
   results=label("",14,Color.WHITE);root.addView(results);
-  button("CHECK BOTH CINEMAS NOW (18/19/20)",root,()->{
+  button("CHECK DUNE + AVENGERS NOW",root,()->{
    results.setText("Checking cinema pages...");
    new Thread(()->{TicketJob.check(this);runOnUiThread(this::showResults);},"manual-check").start();
   });
@@ -88,6 +92,10 @@ public class MainActivity extends Activity {
    Uri.parse(TicketJob.PHOENIX+"18"))));
   button("OPEN PHOENIX ON BOOKMYSHOW",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
    Uri.parse("https://in.bookmyshow.com/cinemas/chennai/inox-luxe-phoenix-market-city-velachery/buytickets/INPR/20261218"))));
+  button("OPEN AVENGERS • INFINITY VISION 3D",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
+   Uri.parse(AvengersWatch.bookingUrl(21)))));
+  button("OPEN AVENGERS ON DISTRICT",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
+   Uri.parse(AvengersWatch.districtUrl(21)))));
   button("ALLOW CHATGPT NOTIFICATION ACCESS",root,()->startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)));
   button("ALLOW FULL-SCREEN ALERTS",root,()->{
    if(Build.VERSION.SDK_INT>=34)startActivity(new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
@@ -100,12 +108,15 @@ public class MainActivity extends Activity {
  }
  private void showResults(){
   SharedPreferences p=prefs(this);
-  results.setText("Last check: "+p.getString("last_check","not run")+"\n"+
+  results.setText("DUNE HIGH PRIORITY\nLast check: "+p.getString("last_check","not run")+"\n"+
    p.getString("check_result","No results yet")+
    "\nAlarm sent: "+(p.getBoolean("fired_18",false)?"18 ":"")+
    (p.getBoolean("fired_19",false)?"19 ":"")+
    (p.getBoolean("fired_20",false)?"20":"")+
-   "\nLatest ChatGPT notification: "+p.getString("last_chatgpt","none"));
+   "\nLatest ChatGPT notification: "+p.getString("last_chatgpt","none")+
+   "\n\nAVENGERS • NORMAL ALERTS (21–27 DEC)\nLast check: "+
+   p.getString("avengers_last_check","not run")+"\n"+
+   p.getString("avengers_result","No results yet"));
  }
  public static synchronized void ring(Context c,String details,int day){
   SharedPreferences p=prefs(c);
