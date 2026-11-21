@@ -19,6 +19,15 @@ jobs:
           gradle-version: '8.11.1'
       - name: Build APK with preinstalled Android SDK
         run: gradle --no-daemon :app:assembleDebug --stacktrace
+      - name: Verify no notification-listener access is requested
+        run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump xmltree "$APK" AndroidManifest.xml > manifest_dump.txt
+          if grep -E 'BIND_NOTIFICATION_LISTENER_SERVICE|NotificationListenerService' manifest_dump.txt; then
+            echo "Forbidden notification-listener service found" >&2
+            exit 1
+          fi
+          echo "Verified: no notification listener in manifest"
       - uses: actions/upload-artifact@v4
         with:
           name: dune-15-minute-alarm-apk

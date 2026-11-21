@@ -65,15 +65,12 @@ public class MainActivity extends Activity {
   root.addView(label("Dune IMAX\nTicket Alarm",34,Color.WHITE));
   root.addView(label("CHENNAI  •  18 / 19 / 20 DECEMBER 2026",15,0xfff5be64));
   root.addView(label("DUNE: PVR PALAZZO / NEXUS VIJAYA\nDUNE: INOX LUXE / PHOENIX MARKETCITY",15,0xffbbccdd));
-  root.addView(label("DUNE • HIGH PRIORITY: loud alarm on confirmed ChatGPT ticket alert for 18-20 Dec.\n\nAVENGERS • NORMAL NOTIFICATIONS: Chennai-wide MS Infinity Vision 3D listings for 21-27 Dec. No siren. Listing alerts do not guarantee checkout.",14,0xffbbccdd));
+  root.addView(label("DUNE • HIGH PRIORITY: manually test loud alarm. Public listing checks for 18-20 Dec cannot prove ticket checkout is open. The app no longer reads other apps\u0027 notifications.\n\nAVENGERS • NORMAL NOTIFICATIONS: MS Infinity Vision 3D listings for 21-27 Dec. No siren. A listing is NOT confirmed booking.",14,0xffbbccdd));
   Switch monitoring=new Switch(this);monitoring.setText("15-minute public-listing checks");monitoring.setTextColor(-1);
   monitoring.setChecked(prefs(this).getBoolean("polling",true));
   monitoring.setOnCheckedChangeListener((b,on)->{prefs(this).edit().putBoolean("polling",on).apply();TicketJob.schedule(this);});
   root.addView(monitoring);
-  Switch armed=new Switch(this);armed.setText("Loud alarm for confirmed alerts");armed.setTextColor(-1);
-  armed.setChecked(prefs(this).getBoolean("armed",true));
-  armed.setOnCheckedChangeListener((b,on)->prefs(this).edit().putBoolean("armed",on).apply());
-  root.addView(armed);
+  root.addView(label("The loud Dune siren works with TEST LOUD ALARM, but automatic loud ringing is unavailable without a trusted booking push service.",12,0xfff5be64));
   Switch avengersWatch=new Switch(this);avengersWatch.setText("Avengers normal alerts • 21–27 Dec");avengersWatch.setTextColor(-1);
   avengersWatch.setChecked(prefs(this).getBoolean("avengers_enabled",true));
   avengersWatch.setOnCheckedChangeListener((b,on)->prefs(this).edit().putBoolean("avengers_enabled",on).apply());
@@ -96,7 +93,6 @@ public class MainActivity extends Activity {
    Uri.parse(AvengersWatch.bookingUrl(21)))));
   button("OPEN AVENGERS ON DISTRICT",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
    Uri.parse(AvengersWatch.districtUrl(21)))));
-  button("ALLOW CHATGPT NOTIFICATION ACCESS",root,()->startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)));
   button("ALLOW FULL-SCREEN ALERTS",root,()->{
    if(Build.VERSION.SDK_INT>=34)startActivity(new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
     Uri.parse("package:"+getPackageName())));
@@ -104,7 +100,7 @@ public class MainActivity extends Activity {
   });
   button("SET UNRESTRICTED BATTERY USE",root,()->startActivity(
    new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:"+getPackageName()))));
-  root.addView(label("Android may delay periodic background jobs. Ticketing pages may block automated requests or show false listings. No real phone call is placed. To hear the alarm in Do Not Disturb, allow alarms in your phone settings.",12,0xffbbccdd));
+  root.addView(label("No notification-reading or accessibility access is requested. Android may delay background checks; listing pages may block requests. No real phone call is placed. TEST LOUD ALARM rings locally only.",12,0xffbbccdd));
  }
  private void showResults(){
   SharedPreferences p=prefs(this);
@@ -113,7 +109,7 @@ public class MainActivity extends Activity {
    "\nAlarm sent: "+(p.getBoolean("fired_18",false)?"18 ":"")+
    (p.getBoolean("fired_19",false)?"19 ":"")+
    (p.getBoolean("fired_20",false)?"20":"")+
-   "\nLatest ChatGPT notification: "+p.getString("last_chatgpt","none")+
+   "\nDune seat checkout: not independently verified by this app"+
    "\n\nAVENGERS • NORMAL ALERTS (21–27 DEC)\nLast check: "+
    p.getString("avengers_last_check","not run")+"\n"+
    p.getString("avengers_result","No results yet"));
