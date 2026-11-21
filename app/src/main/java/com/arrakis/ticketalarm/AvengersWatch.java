@@ -20,13 +20,16 @@ public final class AvengersWatch{
  private static final Pattern BLOCKED=Pattern.compile("(?i)(?:booking window closed|no seats available|show is sold out|bookings for this cinema are not going through|connectivity issue with cinema)");
  public static String districtUrl(int day){return DISTRICT+day;}
  public static String bookingUrl(int day){return MOVIE+day;}
+ public static boolean validSeatLink(String url){return url!=null&&LINKS.matcher(url).matches();}
  private static boolean verified(String html,int day){
   String content=html.replace("\\/","/").replace("&quot;","\"");
   String low=(Html.fromHtml(content,Html.FROM_HTML_MODE_COMPACT).toString()+" "+content).toLowerCase(Locale.ROOT);
   if(!low.contains("avengers: doomsday"))return false;
   if(!(low.contains("infinity vsn 3d")||low.contains("infinity vision 3d")))return false;
   if(!(low.contains(day+" december")||low.contains("202612"+day)))return false;
-  return !BLOCKED.matcher(low).find()&&AVAILABLE.matcher(content).find();
+  // A count or generic legend might describe a different show in the same response.
+  return !BLOCKED.matcher(low).find()&&AVAILABLE.matcher(content).find()
+    && (low.contains("seat") || low.contains("book tickets"));
  }
  public static void check(Context c){
   SharedPreferences p=MainActivity.prefs(c);
@@ -45,6 +48,8 @@ public final class AvengersWatch{
    report.append(day).append(" Dec: ");
    if(p.getBoolean("avengers_alerted_"+day,false)){report.append("verified notification already sent");continue;}
    LinkedHashSet<String> urls=new LinkedHashSet<>();
+   String userLink=p.getString("manual_avengers_url","").trim();
+   if(validSeatLink(userLink))urls.add(userLink);
    try{
     String html=TicketJob.fetch(bookingUrl(day)).replace("\\/","/").replace("&quot;","\"");
     Matcher m=LINKS.matcher(html);

@@ -23,8 +23,9 @@ public final class SeatVerifier {
   if("PVPZ".equalsIgnoreCase(code)&&!(low.contains("palazzo")||low.contains("nexus vijaya")))return false;
   if("INPR".equalsIgnoreCase(code)&&!(low.contains("phoenix")||low.contains("inox: luxe")))return false;
   if(!(low.contains(day+" december")||low.contains("202612"+day)||low.contains("2026-12-"+day)))return false;
-  // A generic AVAILABLE legend, seat price or button is never sufficient.
-  return SEAT.matcher(raw).find()||(COUNT.matcher(raw).find()&&low.contains("select seats"));
+  // Avoid false positives from shared movie data, generic AVAILABLE legends,
+  // price categories or aggregate seat counts that could belong to other shows.
+  return SEAT.matcher(raw).find();
  }
  public static void check(Context c){
   SharedPreferences p=MainActivity.prefs(c);

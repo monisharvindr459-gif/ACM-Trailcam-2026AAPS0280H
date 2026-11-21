@@ -33,7 +33,7 @@ import android.widget.Switch;
 
 public class MainActivity extends Activity {
  public static final String BOOK="https://in.bookmyshow.com/movies/chennai/dune-part-three/ET00491771";
- private static final String CHANNEL="dune_loud_alarm_2026";
+ private static final String CHANNEL="dune_urgent_alarm_audible_v27";
  private static MediaPlayer player;
  private static Vibrator vibrator;
  private static AudioManager audio;
@@ -98,6 +98,21 @@ public class MainActivity extends Activity {
     android.widget.Toast.makeText(this,"Use a complete Dune Chennai IMAX BookMyShow seat-layout URL for 18/19/20 December.",android.widget.Toast.LENGTH_LONG).show();
    }
   });
+  android.widget.EditText avengersUrl=new android.widget.EditText(this);
+  avengersUrl.setSingleLine(false);avengersUrl.setMaxLines(3);
+  avengersUrl.setHint("Optional: paste a direct Avengers Infinity Vision 3D seat-layout URL");
+  avengersUrl.setHintTextColor(0xff9eabb8);avengersUrl.setTextColor(0xffffffff);
+  avengersUrl.setText(prefs(this).getString("manual_avengers_url",""));
+  root.addView(avengersUrl,new LinearLayout.LayoutParams(-1,-2));
+  button("SAVE AVENGERS SEAT LINK",root,()->{
+   String value=avengersUrl.getText().toString().trim();
+   if(AvengersWatch.validSeatLink(value)){
+    prefs(this).edit().putString("manual_avengers_url",value).apply();
+    android.widget.Toast.makeText(this,"Saved Avengers seat page for 21-27 Dec",android.widget.Toast.LENGTH_LONG).show();
+   }else{
+    android.widget.Toast.makeText(this,"Use a direct Avengers Chennai BookMyShow seat-layout link for 21-27 Dec.",android.widget.Toast.LENGTH_LONG).show();
+   }
+  });
   button("VERIFY SEATS IN LIVE BOOKMYSHOW BROWSER",root,()->startActivity(new Intent(this,SeatBrowserActivity.class)));
   button("OPEN VERIFIED DUNE BOOKING PAGE",root,()->{
    String u=prefs(this).getString("verified_dune_url","");
@@ -124,7 +139,7 @@ public class MainActivity extends Activity {
   });
   button("SET UNRESTRICTED BATTERY USE",root,()->startActivity(
    new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:"+getPackageName()))));
-  root.addView(label("No notification-reading or accessibility access. A listed show, loading screen, or generic availability legend never triggers the alarm. Background work may be delayed or blocked by ticketing sites.",12,0xffbbccdd));
+  root.addView(label("Android-managed alarm sound added as a backup. No notification-reading or accessibility access. Only explicit seat-level evidence triggers a Dune booking alarm; generic listings and loading screens do not. Background checks may be delayed.",12,0xffbbccdd));
  }
  private void showResults(){
   SharedPreferences p=prefs(this);
@@ -171,15 +186,25 @@ public class MainActivity extends Activity {
   if(nm!=null){
    NotificationChannel ch=new NotificationChannel(CHANNEL,"Dune urgent ticket alarm",
     NotificationManager.IMPORTANCE_HIGH);
-   ch.setSound(null,null);ch.enableVibration(true);nm.createNotificationChannel(ch);
+   Uri alarmTone=RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+   if(alarmTone==null)alarmTone=RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+   ch.setSound(alarmTone,new AudioAttributes.Builder()
+     .setUsage(AudioAttributes.USAGE_ALARM).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build());
+   ch.enableVibration(true);
+   ch.setVibrationPattern(new long[]{0,900,350,900,350});
+   nm.createNotificationChannel(ch);
    Intent open=new Intent(c,MainActivity.class);
    open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
    PendingIntent pi=PendingIntent.getActivity(c,21,open,
     PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+   Intent stopIntent=new Intent(c,AlarmStopReceiver.class);
+   PendingIntent stopPi=PendingIntent.getBroadcast(c,202618,stopIntent,
+     PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
    Notification note=new Notification.Builder(c,CHANNEL).setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
     .setContentTitle("DUNE IMAX — BOOK NOW").setContentText(details)
     .setCategory(Notification.CATEGORY_ALARM).setPriority(Notification.PRIORITY_MAX)
-    .setContentIntent(pi).setFullScreenIntent(pi,true).setOngoing(true).build();
+    .setContentIntent(pi).setFullScreenIntent(pi,true).setOngoing(true)
+    .addAction(android.R.drawable.ic_media_pause,"STOP ALARM",stopPi).build();
    try{nm.notify(202618,note);}catch(SecurityException ignored){}
   }
   H.postDelayed(()->stop(c),360000);
