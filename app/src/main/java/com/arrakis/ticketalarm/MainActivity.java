@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
   root.addView(label("Dune IMAX\nTicket Alarm",34,Color.WHITE));
   root.addView(label("CHENNAI  •  18 / 19 / 20 DECEMBER 2026",15,0xfff5be64));
   root.addView(label("DUNE: PVR PALAZZO / NEXUS VIJAYA\nDUNE: INOX LUXE / PHOENIX MARKETCITY",15,0xffbbccdd));
-  root.addView(label("DUNE • HIGH PRIORITY: automatic siren ONLY after explicit selectable-seat evidence, not just a show listing.\n\nAVENGERS • NORMAL NOTIFICATIONS for MS Infinity Vision 3D, Dec 21-27. No siren.",14,0xffbbccdd));
+  root.addView(label("DUNE • HIGH PRIORITY: automatic siren ONLY after explicit selectable-seat evidence, not just a show listing.\n\nAVENGERS • NORMAL NOTIFICATIONS only after explicit seat evidence for MS Infinity Vision 3D, Dec 21-27. No siren.",14,0xffbbccdd));
   Switch monitoring=new Switch(this);monitoring.setText("15-minute public-listing checks");monitoring.setTextColor(-1);
   monitoring.setChecked(prefs(this).getBoolean("polling",true));
   monitoring.setOnCheckedChangeListener((b,on)->{prefs(this).edit().putBoolean("polling",on).apply();TicketJob.schedule(this);});
