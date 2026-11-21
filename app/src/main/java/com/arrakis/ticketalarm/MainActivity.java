@@ -65,12 +65,15 @@ public class MainActivity extends Activity {
   root.addView(label("Dune IMAX\nTicket Alarm",34,Color.WHITE));
   root.addView(label("CHENNAI  •  18 / 19 / 20 DECEMBER 2026",15,0xfff5be64));
   root.addView(label("DUNE: PVR PALAZZO / NEXUS VIJAYA\nDUNE: INOX LUXE / PHOENIX MARKETCITY",15,0xffbbccdd));
-  root.addView(label("DUNE • HIGH PRIORITY: manually test loud alarm. Public listing checks for 18-20 Dec cannot prove ticket checkout is open. The app no longer reads other apps\u0027 notifications.\n\nAVENGERS • NORMAL NOTIFICATIONS: MS Infinity Vision 3D listings for 21-27 Dec. No siren. A listing is NOT confirmed booking.",14,0xffbbccdd));
+  root.addView(label("DUNE • HIGH PRIORITY: automatic siren ONLY after explicit selectable-seat evidence, not just a show listing.\n\nAVENGERS • NORMAL NOTIFICATIONS for MS Infinity Vision 3D, Dec 21-27. No siren.",14,0xffbbccdd));
   Switch monitoring=new Switch(this);monitoring.setText("15-minute public-listing checks");monitoring.setTextColor(-1);
   monitoring.setChecked(prefs(this).getBoolean("polling",true));
   monitoring.setOnCheckedChangeListener((b,on)->{prefs(this).edit().putBoolean("polling",on).apply();TicketJob.schedule(this);});
   root.addView(monitoring);
-  root.addView(label("The loud Dune siren works with TEST LOUD ALARM, but automatic loud ringing is unavailable without a trusted booking push service.",12,0xfff5be64));
+  Switch armed=new Switch(this);armed.setText("Loud Dune alarm on verified seats");armed.setTextColor(-1);
+  armed.setChecked(prefs(this).getBoolean("armed",true));
+  armed.setOnCheckedChangeListener((b,on)->prefs(this).edit().putBoolean("armed",on).apply());
+  root.addView(armed);
   Switch avengersWatch=new Switch(this);avengersWatch.setText("Avengers normal alerts • 21–27 Dec");avengersWatch.setTextColor(-1);
   avengersWatch.setChecked(prefs(this).getBoolean("avengers_enabled",true));
   avengersWatch.setOnCheckedChangeListener((b,on)->prefs(this).edit().putBoolean("avengers_enabled",on).apply());
@@ -79,6 +82,12 @@ public class MainActivity extends Activity {
   button("CHECK DUNE + AVENGERS NOW",root,()->{
    results.setText("Checking cinema pages...");
    new Thread(()->{TicketJob.check(this);runOnUiThread(this::showResults);},"manual-check").start();
+  });
+  button("VERIFY SEATS IN LIVE BOOKMYSHOW BROWSER",root,()->startActivity(new Intent(this,SeatBrowserActivity.class)));
+  button("OPEN VERIFIED DUNE BOOKING PAGE",root,()->{
+   String u=prefs(this).getString("verified_dune_url","");
+   if(SeatVerifier.validSeatLink(u))startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(u)));
+   else startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(SeatVerifier.moviePage(18))));
   });
   button("TEST LOUD ALARM",root,()->ring(this,"Test Dune IMAX loud alarm",0));
   button("STOP ALARM",root,()->{stop(this);showResults();});
@@ -100,7 +109,7 @@ public class MainActivity extends Activity {
   });
   button("SET UNRESTRICTED BATTERY USE",root,()->startActivity(
    new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:"+getPackageName()))));
-  root.addView(label("No notification-reading or accessibility access is requested. Android may delay background checks; listing pages may block requests. No real phone call is placed. TEST LOUD ALARM rings locally only.",12,0xffbbccdd));
+  root.addView(label("No notification-reading or accessibility access. A listed show, loading screen, or generic availability legend never triggers the alarm. Background work may be delayed or blocked by ticketing sites.",12,0xffbbccdd));
  }
  private void showResults(){
   SharedPreferences p=prefs(this);
@@ -109,7 +118,9 @@ public class MainActivity extends Activity {
    "\nAlarm sent: "+(p.getBoolean("fired_18",false)?"18 ":"")+
    (p.getBoolean("fired_19",false)?"19 ":"")+
    (p.getBoolean("fired_20",false)?"20":"")+
-   "\nDune seat checkout: not independently verified by this app"+
+   "\nSeat-level verification:\n"+p.getString("seat_verification","Not checked yet")+
+   "\nDiscovered direct seat links: "+p.getInt("seat_discovered_links",0)+
+   "\nLast verified: "+p.getString("verified_dune_details","None")+
    "\n\nAVENGERS • NORMAL ALERTS (21–27 DEC)\nLast check: "+
    p.getString("avengers_last_check","not run")+"\n"+
    p.getString("avengers_result","No results yet"));

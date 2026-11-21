@@ -1,15 +1,12 @@
-# Chennai Ticket Watch v2.3 — reduced-permission build
-This build addresses the Google Play Protect warning seen while sideloading v2.2 by **completely removing the ChatGPT notification-listener service**. It does not ask to read other applications' notifications, SMS, or accessibility content.
+# Chennai Cinema Alarm v2.4
 
-## Functionality
-- Dune: public IMAX show listing checker for PVR Palazzo / Nexus Vijaya and INOX LUXE / Phoenix on Dec 18, 19 and 20, 2026.
-- Avengers: *MS Infinity Vision 3D* normal-priority listing notifications for Dec 21–27, 2026; no siren.
-- Both use Android's 15-minute periodic JobScheduler, which can be delayed by battery saving and network conditions.
-- Test loud alarm: the built-in siren test uses the default system alarm sound and vibration. This is a **manual test**.
-- Does not independently verify checkout, payment or tickets. Does not turn ChatGPT alerts into loud alarms. A separate trusted push service would be required to deliver verifiable automatic booking alarms without broad notification-reading access.
-- The app does not guarantee that Google Play Protect will accept an unknown sideloaded APK; do not disable Play Protect if it blocks installation.
+## Dune high priority (Dec 18–20)
+PVR Palazzo / Nexus Vijaya, INOX LUXE / Phoenix. The app discovers BookMyShow direct seat-layout links and checks them for **explicit available individual seat IDs** or a machine-readable positive available-seat count **on the correct Dune IMAX / venue / day page**. A listed time, generic "Available" legend, and "Please wait while we load the seats" do NOT count. If positive evidence is detected, the app triggers the system alarm ringtone and urgent notification, once per date, and saves the direct booking link. You can also use the in-app **live BookMyShow browser** to inspect rendered selectable seats with JavaScript (requires the app to be open and navigating to a seat map).
 
-## Install
-Remove a previously installed build if Android reports an APK signing conflict, then install. Grant normal notification permission. Do not enable restricted notification-reading permissions.
-Build: AGP 8.9.2; Java 17; targetSdk 35; versionCode 5; versionName 2.3.
-Real-device testing has not been performed.
+**No guarantee:** BookMyShow/District have no verified publicly supported seat-inventory API for this purpose. The checker may fail to discover direct show links, or pages may hide seat data behind JS/cookies/anti-bot systems, even when purchasing is possible. It will report UNVERIFIED and not ring rather than produce a false alarm. Android may defer 15-minute jobs; background alarm audio may be limited by OS restrictions. The browser's seat-element heuristic has not been tested against a real Chennai Dune checkout.
+
+## Avengers normal priority (Dec 21–27)
+MS Infinity Vision 3D in Chennai, ordinary listing notifications only, no siren.
+
+## Permissions & install
+No notification listener or accessibility permission is requested. Need standard notifications, alarm audio, background data. Check the APK with Play Protect enabled. Signed debug build; may conflict with an earlier install if signing keys differ. Manual TEST LOUD ALARM button included.

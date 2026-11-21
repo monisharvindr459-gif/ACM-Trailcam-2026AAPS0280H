@@ -69,6 +69,7 @@ public class TicketJob extends JobService {
   fmt.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
   p.edit().putString("last_check",fmt.format(new Date())+" IST")
    .putString("check_result",result.toString()).apply();
+  try{SeatVerifier.check(context);}catch(Exception ignored){p.edit().putString("seat_verification","Checker unavailable").apply();}
   // Keep Dune (high priority) completely separate from Avengers (normal notification).
   try { AvengersWatch.check(context); } catch(Exception ignored) {
    p.edit().putString("avengers_result","Avengers check unavailable").apply();
