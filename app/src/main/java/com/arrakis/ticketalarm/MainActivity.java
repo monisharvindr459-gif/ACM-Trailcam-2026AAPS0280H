@@ -64,7 +64,8 @@ public class MainActivity extends Activity {
   root.addView(label("ARRAKIS / ALERT SYSTEM",14,0xfff5be64));
   root.addView(label("Dune IMAX\nTicket Alarm",34,Color.WHITE));
   root.addView(label("CHENNAI  •  18 / 19 / 20 DECEMBER 2026",15,0xfff5be64));
-  root.addView(label("Checks public cinema listings about every 15 minutes. Only independently verified booking alerts trigger the loud siren. A displayed showtime is NOT proof that the cinema checkout works.",14,0xffbbccdd));
+  root.addView(label("PVR PALAZZO / NEXUS VIJAYA\nINOX LUXE / PHOENIX MARKETCITY",15,0xffbbccdd));
+  root.addView(label("Checks both Chennai IMAX cinema listings for all three dates approximately every 15 minutes. A listed showtime alone cannot prove checkout works, and will never trigger a confirmed-booking siren.",14,0xffbbccdd));
   Switch monitoring=new Switch(this);monitoring.setText("15-minute public-listing checks");monitoring.setTextColor(-1);
   monitoring.setChecked(prefs(this).getBoolean("polling",true));
   monitoring.setOnCheckedChangeListener((b,on)->{prefs(this).edit().putBoolean("polling",on).apply();TicketJob.schedule(this);});
@@ -74,15 +75,19 @@ public class MainActivity extends Activity {
   armed.setOnCheckedChangeListener((b,on)->prefs(this).edit().putBoolean("armed",on).apply());
   root.addView(armed);
   results=label("",14,Color.WHITE);root.addView(results);
-  button("CHECK ALL THREE DATES NOW",root,()->{
+  button("CHECK BOTH CINEMAS NOW (18/19/20)",root,()->{
    results.setText("Checking cinema pages...");
    new Thread(()->{TicketJob.check(this);runOnUiThread(this::showResults);},"manual-check").start();
   });
   button("TEST LOUD ALARM",root,()->ring(this,"Test Dune IMAX loud alarm",0));
   button("STOP ALARM",root,()->{stop(this);showResults();});
   button("OPEN BOOKMYSHOW",root,()->startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(BOOK))));
-  button("OPEN DISTRICT",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
+  button("OPEN PALAZZO ON DISTRICT",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
    Uri.parse(TicketJob.CINEMA+"18"))));
+  button("OPEN PHOENIX ON DISTRICT",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
+   Uri.parse(TicketJob.PHOENIX+"18"))));
+  button("OPEN PHOENIX ON BOOKMYSHOW",root,()->startActivity(new Intent(Intent.ACTION_VIEW,
+   Uri.parse("https://in.bookmyshow.com/cinemas/chennai/inox-luxe-phoenix-market-city-velachery/buytickets/INPR/20261218"))));
   button("ALLOW CHATGPT NOTIFICATION ACCESS",root,()->startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)));
   button("ALLOW FULL-SCREEN ALERTS",root,()->{
    if(Build.VERSION.SDK_INT>=34)startActivity(new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,

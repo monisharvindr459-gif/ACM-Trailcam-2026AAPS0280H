@@ -18,6 +18,7 @@ import java.util.TimeZone;
 public class TicketJob extends JobService {
  public static final int ID=18820;
  public static final String CINEMA="https://www.district.in/movies/pvr-palazzo-the-nexus-vijaya-mall-chennai-CD1022274?fromdate=2026-12-";
+ public static final String PHOENIX="https://www.district.in/movies/inox-phoenix-market-city-formerly-jazz-cinemas-velachery-chennai-CD1020779?fromdate=2026-12-";
  public static void schedule(Context c) {
   JobScheduler js=(JobScheduler)c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
   if(js==null)return;
@@ -33,29 +34,36 @@ public class TicketJob extends JobService {
  public static void check(Context context) {
   SharedPreferences p=MainActivity.prefs(context);
   StringBuilder result=new StringBuilder();
+  String[][] cinemas={{"PVR Palazzo (Nexus Vijaya)",CINEMA},{"INOX LUXE (Phoenix Marketcity)",PHOENIX}};
   for(int day:new int[]{18,19,20}){
-   if(result.length()>0)result.append("\n");
-   result.append(day).append(" Dec: ");
-   try{
-    String html=fetch(CINEMA+day).toLowerCase(Locale.ROOT);
-    int cutoff=html.indexOf("frequently asked questions");
-    if(cutoff<0){result.append("Site response cannot be verified");continue;}
-    String shows=html.substring(0,cutoff);
-    int movie=shows.indexOf("dune: part three");
-    if(movie<0){result.append("No Dune listing found");continue;}
-    int to=Math.min(shows.length(),movie+2500);
-    String movieBlock=shows.substring(movie,to);
-    // Never let a different movie's IMAX format count.
-    int next=movieBlock.indexOf("ua16+", 20);
-    if(next>0)movieBlock=movieBlock.substring(0,next);
-    if(!(movieBlock.contains("imax 2d")||movieBlock.contains("imax 3d"))){
-     result.append("Dune appears, IMAX unconfirmed");
-    } else if(movieBlock.contains("booking window closed")||movieBlock.contains("no tickets are available")){
-     result.append("IMAX appears, booking closed");
-    } else {
-     result.append("IMAX listed; seat checkout UNVERIFIED");
+   for(String[] cinema:cinemas){
+    if(result.length()>0)result.append("\n");
+    result.append(cinema[0]).append(" | ").append(day).append(" Dec: ");
+    try{
+     String html=fetch(cinema[1]+day).toLowerCase(Locale.ROOT);
+     int cutoff=html.indexOf("frequently asked questions");
+     if(cutoff<0){result.append("Listing response unverified");continue;}
+     String shows=html.substring(0,cutoff);
+     if(shows.contains("no shows playing at the moment")){
+      result.append("No shows posted");continue;
+     }
+     int movie=shows.indexOf("dune: part three");
+     if(movie<0){result.append("No Dune show listed");continue;}
+     // The published cinema page is NOT a seat-selection or checkout session.
+     // IMAX wording within a nearby movie listing may itself be ambiguous.
+     String around=shows.substring(movie,Math.min(shows.length(),movie+2000));
+     if(around.contains("booking window closed") || around.contains("connectivity issue with cinema")
+          || around.contains("no tickets are available")){
+      result.append("Dune listed; booking closed / unavailable");
+     }else if(around.contains("imax 2d") || around.contains("imax 3d")){
+      result.append("Dune and IMAX appear; live checkout UNVERIFIED");
+     }else{
+      result.append("Dune mentioned; IMAX / checkout UNVERIFIED");
+     }
+    }catch(Exception e){
+     result.append("Source unavailable (network / access)");
     }
-   }catch(Exception e){result.append("Site inaccessible / network error");}
+   }
   }
   SimpleDateFormat fmt=new SimpleDateFormat("d MMM, h:mm a",Locale.ENGLISH);
   fmt.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
