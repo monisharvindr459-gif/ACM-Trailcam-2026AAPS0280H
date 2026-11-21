@@ -83,6 +83,21 @@ public class MainActivity extends Activity {
    results.setText("Checking cinema pages...");
    new Thread(()->{TicketJob.check(this);runOnUiThread(this::showResults);},"manual-check").start();
   });
+  android.widget.EditText seatUrl=new android.widget.EditText(this);
+  seatUrl.setSingleLine(false);seatUrl.setMaxLines(3);
+  seatUrl.setHint("Paste a direct Dune IMAX BookMyShow seat-layout URL, if you have one");
+  seatUrl.setHintTextColor(0xff9eabb8);seatUrl.setTextColor(0xffffffff);
+  seatUrl.setText(prefs(this).getString("manual_seat_url",""));
+  root.addView(seatUrl,new LinearLayout.LayoutParams(-1,-2));
+  button("SAVE DUNE SEAT-LAYOUT LINK",root,()->{
+   String input=seatUrl.getText().toString().trim();
+   if(SeatVerifier.validSeatLink(input)){
+    prefs(this).edit().putString("manual_seat_url",input).apply();
+    android.widget.Toast.makeText(this,"Saved. Next check will verify actual seats.",android.widget.Toast.LENGTH_LONG).show();
+   } else {
+    android.widget.Toast.makeText(this,"Use a complete Dune Chennai IMAX BookMyShow seat-layout URL for 18/19/20 December.",android.widget.Toast.LENGTH_LONG).show();
+   }
+  });
   button("VERIFY SEATS IN LIVE BOOKMYSHOW BROWSER",root,()->startActivity(new Intent(this,SeatBrowserActivity.class)));
   button("OPEN VERIFIED DUNE BOOKING PAGE",root,()->{
    String u=prefs(this).getString("verified_dune_url","");
